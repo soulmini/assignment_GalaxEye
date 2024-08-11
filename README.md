@@ -36,7 +36,7 @@ cd yourproject
 
    Replace REACT_APP_API_URL with your backend API URL if different.
 
-### 3. Install Dependencies (Optional)
+### 3. Install Dependencies 
 
    If you need to install dependencies manually:
 
@@ -45,6 +45,8 @@ cd yourproject
 ```bash
 cd backend
 npm install
+npm run build
+npm start
 ```
    
 
@@ -53,6 +55,7 @@ npm install
 ```bash
 cd frontend
 npm install
+npm run dev
 ```
    
 
