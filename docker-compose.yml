@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  web:
+    container_name: backend
+    image: backend
+    build:
+      context: ./backend  # Adjust the context to the backend directory
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: ./frontend  # Adjust the context to the frontend directory
+    ports:
+      - 3001:3000  # Map host port 3001 to container port 3000
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000  # Adjust as needed for your API URL
+
+  db:
+    container_name: db
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: neondb_owner
+      POSTGRES_PASSWORD: ikSd1s7ElYPK
+      POSTGRES_DB: prisma_migrate_shadow_db_6f421977-41e5-4059-996a-51843fb04e75
+      DB_HOST: ep-old-wood-a58j3peg.us-east-2.aws.neon.tech
+      DB_PORT: 5432
+      DB_SSLMODE: require
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
