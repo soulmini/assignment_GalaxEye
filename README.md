@@ -36,7 +36,7 @@ cd yourproject
 
    Replace REACT_APP_API_URL with your backend API URL if different.
 
-### 3. Install Dependencies & Run Server/Frontend
+### 3. Install Dependencies & Run Server/Frontend (make sure 4th step should be completed)
 
    If you need to install dependencies manually:
 
