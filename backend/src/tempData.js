@@ -2,44 +2,98 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    const tiles = [];
-    const startLat = 10.0;
-    const startLng = 70.0;
-    const tileSize = 1.0;
-    const gridSize = 5; // Create a 5x5 grid of tiles
-
-    let tileId = 51;
-
-    for (let i = 0; i < gridSize; i++) {
-        for (let j = 0; j < gridSize; j++) {
-            const bottomLeft = [startLng + j * tileSize, startLat + i * tileSize];
-            const bottomRight = [startLng + (j + 1) * tileSize, startLat + i * tileSize];
-            const topRight = [startLng + (j + 1) * tileSize, startLat + (i + 1) * tileSize];
-            const topLeft = [startLng + j * tileSize, startLat + (i + 1) * tileSize];
-
-            const newTile = {
-                geom: JSON.stringify({
-                    type: "Polygon",
-                    coordinates: [[
-                        bottomLeft,
-                        bottomRight,
-                        topRight,
-                        topLeft,
-                        bottomLeft
-                    ]]
-                }),
-                metadata: {
-                    id: tileId,
-                    name: `Tile ${tileId}`,
-                    description: `Tile covering area from [${bottomLeft}] to [${topRight}]`,
-                    resolution: "high"
-                }
-            };
-
-            tiles.push(newTile);
-            tileId++;
-        }
-    }
+    const tiles = [
+        {
+            geom: JSON.stringify({
+                type: "Polygon",
+                coordinates: [[
+                    [77.4, 12.8], // bottom-left
+                    [77.5, 12.8], // bottom-right
+                    [77.5, 12.9], // top-right
+                    [77.4, 12.9], // top-left
+                    [77.4, 12.8]  // closing the polygon
+                ]]
+            }),
+            metadata: {
+                id: 1,
+                name: "Tile 1",
+                description: "Tile covering area from [77.4, 12.8] to [77.5, 12.9]",
+                resolution: "high"
+            }
+        },
+        {
+            geom: JSON.stringify({
+                type: "Polygon",
+                coordinates: [[
+                    [77.5, 12.8], // bottom-left
+                    [77.6, 12.8], // bottom-right
+                    [77.6, 12.9], // top-right
+                    [77.5, 12.9], // top-left
+                    [77.5, 12.8]  // closing the polygon
+                ]]
+            }),
+            metadata: {
+                id: 2,
+                name: "Tile 2",
+                description: "Tile covering area from [77.5, 12.8] to [77.6, 12.9]",
+                resolution: "high"
+            }
+        },
+        {
+            geom: JSON.stringify({
+                type: "Polygon",
+                coordinates: [[
+                    [77.4, 12.9], // bottom-left
+                    [77.5, 12.9], // bottom-right
+                    [77.5, 13.0], // top-right
+                    [77.4, 13.0], // top-left
+                    [77.4, 12.9]  // closing the polygon
+                ]]
+            }),
+            metadata: {
+                id: 3,
+                name: "Tile 3",
+                description: "Tile covering area from [77.4, 12.9] to [77.5, 13.0]",
+                resolution: "high"
+            }
+        },
+        {
+            geom: JSON.stringify({
+                type: "Polygon",
+                coordinates: [[
+                    [77.5, 12.9], // bottom-left
+                    [77.6, 12.9], // bottom-right
+                    [77.6, 13.0], // top-right
+                    [77.5, 13.0], // top-left
+                    [77.5, 12.9]  // closing the polygon
+                ]]
+            }),
+            metadata: {
+                id: 4,
+                name: "Tile 4",
+                description: "Tile covering area from [77.5, 12.9] to [77.6, 13.0]",
+                resolution: "high"
+            }
+        },
+        {
+            geom: JSON.stringify({
+                type: "Polygon",
+                coordinates: [[
+                    [77.6, 12.8], // bottom-left
+                    [77.7, 12.8], // bottom-right
+                    [77.7, 12.9], // top-right
+                    [77.6, 12.9], // top-left
+                    [77.6, 12.8]  // closing the polygon
+                ]]
+            }),
+            metadata: {
+                id: 5,
+                name: "Tile 5",
+                description: "Tile covering area from [77.6, 12.8] to [77.7, 12.9]",
+                resolution: "high"
+            }
+        },
+    ];
 
     for (const tile of tiles) {
         await prisma.tile.create({

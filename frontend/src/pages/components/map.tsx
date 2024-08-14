@@ -16,7 +16,7 @@ interface PolygonData {
 
 interface TileData {
     id: number;
-    coordinates: LatLng[]; // Assuming coordinates are provided as an array of LatLng objects
+    coordinates: [number, number][]; // Updated: coordinates as an array of [number, number]
     name: string;
     resolution: string;
     description: string;
@@ -24,7 +24,7 @@ interface TileData {
 
 const Map = () => {
     const [polygons, setPolygons] = useState<PolygonData[]>([]);
-    const [tiles, setTiles] = useState<TileData[]>([]); // Add state for tiles
+    const [tiles, setTiles] = useState<TileData[]>([]);
 
     const sendAOIToBackend = async (aoiData: PolygonData) => {
         try {
@@ -120,7 +120,7 @@ const Map = () => {
                         <Polygon
                             key={tile.id}
                             // @ts-ignore
-                            positions={tile.coordinates.map(([lat, lng]) => [lat, lng] as [number, number])}
+                            positions={tile.coordinates.map(([lng, lat]) => [lat, lng] as [number, number])} // Fixed: Switched lat and lng for correct positioning
                             pathOptions={{ color: 'red' }}
                         >
                             <Popup>

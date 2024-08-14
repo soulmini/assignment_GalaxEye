@@ -15,6 +15,8 @@ app.get('/api', (req, res) => {
 
 
 app.use('/api', aoi);
+
+// this for testing purposes only
 app.use('/api', tiles);
 
 
