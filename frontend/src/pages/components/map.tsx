@@ -1,8 +1,14 @@
+// components/Map.tsx
+'use strict';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Polygon } from 'react-leaflet';
-import { EditControl } from 'react-leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
+
+const EditControl = dynamic(() => import('react-leaflet-draw').then(mod => mod.EditControl), {
+    ssr: false
+});
 
 interface LatLng {
     lat: number;
@@ -16,19 +22,19 @@ interface PolygonData {
 
 interface TileData {
     id: number;
-    coordinates: [number, number][]; // Updated: coordinates as an array of [number, number]
+    coordinates: [number, number][];
     name: string;
     resolution: string;
     description: string;
 }
 
-const Map = () => {
+const MapComponent = () => {
     const [polygons, setPolygons] = useState<PolygonData[]>([]);
     const [tiles, setTiles] = useState<TileData[]>([]);
 
     const sendAOIToBackend = async (aoiData: PolygonData) => {
         try {
-            const response = await fetch('http://localhost:5000/api/aoi', {
+            const response = await fetch('https://assignment-galaxeye.onrender.com/api/aoi', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,8 +48,6 @@ const Map = () => {
 
             const result = await response.json();
             console.log('Response from backend:', result);
-
-            // Assuming result.intersectingTiles contains the array of tiles
             setTiles(result.intersectingTiles);
 
         } catch (error) {
@@ -58,7 +62,6 @@ const Map = () => {
         };
         setPolygons([...polygons, newPolygon]);
         sendAOIToBackend(newPolygon);
-        console.log(newPolygon);
     };
 
     const handleEdited = (e: any) => {
@@ -68,6 +71,7 @@ const Map = () => {
                 latlngs: layer.getLatLngs()[0].map((latlng: any) => ({ lat: latlng.lat, lng: latlng.lng })),
             };
         });
+
         setPolygons((prevPolygons) =>
             prevPolygons.map((polygon) => {
                 const editedPolygon = editedPolygons.find((p: PolygonData) => p.id === polygon.id);
@@ -78,62 +82,66 @@ const Map = () => {
         editedPolygons.forEach(sendAOIToBackend);
     };
 
+    const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+    const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+    const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+    const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
+    const FeatureGroup = dynamic(() => import('react-leaflet').then(mod => mod.FeatureGroup), { ssr: false });
+    const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
+    const EditControl = dynamic(() => import('react-leaflet-draw').then(mod => mod.EditControl), { ssr: false });
+
     return (
-        <div className='flex flex-col items-center justify-center h-screen'>
-            <h1 className='text-4xl font-bold mb-8'>Map</h1>
-            <MapContainer
-                center={[14.5995, 75.9179]}
-                zoom={7}
-                scrollWheelZoom={false}
-                className='w-4/5 h-3/4 rounded-lg shadow-lg'
-            >
-                <TileLayer
-                    attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        <MapContainer
+            center={[14.5995, 75.9179]}
+            zoom={7}
+            scrollWheelZoom={false}
+            className='w-4/5 h-3/4 rounded-lg shadow-lg'
+        >
+            <TileLayer
+                attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            />
+            <Marker position={[14.5995, 75.9179]}>
+                <Popup>Karnataka, India</Popup>
+            </Marker>
+            <FeatureGroup>
+                <EditControl
+                    position="topright"
+                    onCreated={handleDrawCreated}
+                    onEdited={handleEdited}
+                    draw={{
+                        marker: false,
+                        polyline: false,
+                        circle: false,
+                        rectangle: true,
+                        circlemarker: false,
+                    }}
                 />
-                <Marker position={[14.5995, 75.9179]}>
-                    <Popup>Karnataka, India</Popup>
-                </Marker>
-                <FeatureGroup>
-                    <EditControl
-                        position="topright"
-                        onCreated={handleDrawCreated}
-                        onEdited={handleEdited}
-                        draw={{
-                            marker: false,
-                            polyline: false,
-                            circle: false,
-                            rectangle: true,
-                            circlemarker: false,
-                        }}
+                {polygons.map((polygon) => (
+                    <Polygon
+                        key={polygon.id}
+                        // @ts-ignore
+                        id={polygon.id.toString()}
+                        positions={polygon.latlngs.map(({ lat, lng }) => [lat, lng] as [number, number])}
+                        pathOptions={{ color: 'blue' }}
                     />
-                    {polygons.map((polygon) => (
-                        <Polygon
-                            key={polygon.id}
-                            // @ts-ignore
-                            id={polygon.id.toString()}
-                            positions={polygon.latlngs.map(({ lat, lng }) => [lat, lng] as [number, number])}
-                            pathOptions={{ color: 'blue' }}
-                        />
-                    ))}
-                    {tiles.map((tile) => (
-                        <Polygon
-                            key={tile.id}
-                            // @ts-ignore
-                            positions={tile.coordinates.map(([lng, lat]) => [lat, lng] as [number, number])} // Fixed: Switched lat and lng for correct positioning
-                            pathOptions={{ color: 'red' }}
-                        >
-                            <Popup>
-                                <strong>{tile.name}</strong><br />
-                                Resolution: {tile.resolution}<br />
-                                {tile.description}
-                            </Popup>
-                        </Polygon>
-                    ))}
-                </FeatureGroup>
-            </MapContainer>
-        </div>
+                ))}
+                {tiles.map((tile) => (
+                    <Polygon
+                        key={tile.id}
+                        positions={tile.coordinates.map(([lng, lat]) => [lat, lng] as [number, number])}
+                        pathOptions={{ color: 'red' }}
+                    >
+                        <Popup>
+                            <strong>{tile.name}</strong><br />
+                            Resolution: {tile.resolution}<br />
+                            {tile.description}
+                        </Popup>
+                    </Polygon>
+                ))}
+            </FeatureGroup>
+        </MapContainer>
     );
 };
 
-export default Map;
+export default MapComponent;
