@@ -1,14 +1,17 @@
 // components/Map.tsx
 'use strict';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, FeatureGroup, Polygon } from 'react-leaflet';
+import { useState, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
-const EditControl = dynamic(() => import('react-leaflet-draw').then(mod => mod.EditControl), {
-    ssr: false
-});
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
+const FeatureGroup = dynamic(() => import('react-leaflet').then(mod => mod.FeatureGroup), { ssr: false });
+const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
+const EditControl = dynamic(() => import('react-leaflet-draw').then(mod => mod.EditControl), { ssr: false });
 
 interface LatLng {
     lat: number;
@@ -31,6 +34,7 @@ interface TileData {
 const MapComponent = () => {
     const [polygons, setPolygons] = useState<PolygonData[]>([]);
     const [tiles, setTiles] = useState<TileData[]>([]);
+    const mapRef = useRef<any>(null);
 
     const sendAOIToBackend = async (aoiData: PolygonData) => {
         try {
@@ -82,20 +86,13 @@ const MapComponent = () => {
         editedPolygons.forEach(sendAOIToBackend);
     };
 
-    const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
-    const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-    const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
-    const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
-    const FeatureGroup = dynamic(() => import('react-leaflet').then(mod => mod.FeatureGroup), { ssr: false });
-    const Polygon = dynamic(() => import('react-leaflet').then(mod => mod.Polygon), { ssr: false });
-    const EditControl = dynamic(() => import('react-leaflet-draw').then(mod => mod.EditControl), { ssr: false });
-
     return (
         <MapContainer
             center={[14.5995, 75.9179]}
             zoom={7}
             scrollWheelZoom={false}
             className='w-4/5 h-3/4 rounded-lg shadow-lg'
+            ref={mapRef}
         >
             <TileLayer
                 attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
