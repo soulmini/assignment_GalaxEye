@@ -47,7 +47,7 @@ router.post('/aoi', async (req: Request, res: Response) => {
                     description: "No intersecting tiles found in the given area."
                 }]
             };
-            res.json(sampleResponse);
+            res.json(response);
         }
 
     } catch (error) {
