@@ -38,7 +38,7 @@ const MapComponent = () => {
 
     const sendAOIToBackend = async (aoiData: PolygonData) => {
         try {
-            const response = await fetch('https://assignment-galaxeye.onrender.com/api/aoi', {
+            const response = await fetch('http://localhost:5000/api/aoi', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

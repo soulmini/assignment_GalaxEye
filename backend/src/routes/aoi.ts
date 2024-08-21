@@ -1,7 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
-import { sampleResponse } from './sampleTiles';
 const prisma = new PrismaClient();
 const router = express.Router();
 

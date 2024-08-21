@@ -5,7 +5,7 @@ services:
     container_name: backend
     image: backend
     build:
-      context: ./backend  # Adjust the context to the backend directory
+      context: ./backend  
     ports:
       - 5000:5000
     env_file:
@@ -15,14 +15,14 @@ services:
     container_name: frontend
     image: frontend
     build:
-      context: ./frontend  # Adjust the context to the frontend directory
+      context: ./frontend 
     ports:
-      - 3000:3000  # Map host port 3001 to container port 3000
+      - 3000:3000 
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3000  # Adjust as needed for your API URL
+      NEXT_PUBLIC_API_URL: http://localhost:3000  
 
   db:
-    container_name: db
+    container_name: database
     image: postgres:16
     restart: always
     environment:

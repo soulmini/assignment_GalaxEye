@@ -3,7 +3,6 @@ import cors from 'cors';
 const app = express();
 const PORT = 5000;
 import aoi from './routes/aoi';
-import tiles from './routes/tiles';
 
 
 app.use(cors());
@@ -15,9 +14,6 @@ app.get('/api', (req, res) => {
 
 
 app.use('/api', aoi);
-
-// this for testing purposes only
-app.use('/api', tiles);
 
 
 app.listen(PORT, ()=> {
